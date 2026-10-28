@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stella idle Clicker</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0f1226;--pn:#181d3d;--ln:#2b3369;--tx:#e3e8ff;--mu:#8e98d0;--ac:#7fe0c8;--au:#ffcf5c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 "DotGothic16","MS Gothic",monospace;font-variant-numeric:tabular-nums;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--au);outline-offset:2px}
+main{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:860px){main{grid-template-columns:340px minmax(0,1fr)}}
+h1{font-size:15px;margin:0;color:var(--mu);font-weight:700}
+.big{font-size:clamp(34px,8vw,48px);font-weight:900;line-height:1.1;margin:6px 0 0;color:var(--au);word-break:break-all}
+.sub{color:var(--mu);margin:2px 0 14px}
+#star{position:relative;display:block;margin:10px auto 18px;width:220px;height:220px;border:0;padding:0;background:none;filter:drop-shadow(0 0 22px #ffcf5c66);transition:transform .06s}#star svg{width:100%;height:100%;display:block;pointer-events:none}
+#star:active{transform:scale(.94)}
+#star span{position:absolute;inset:0;display:grid;place-items:center;color:#4a2a05;font-weight:900;font-size:22px}
+.fl{position:fixed;pointer-events:none;color:var(--au);font-weight:700;animation:up .9s ease-out forwards;z-index:5}
+@keyframes up{to{transform:translateY(-60px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.fl{animation:none;opacity:.8}#star{transition:none}}
+.box{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:12px;font-size:13px;color:var(--mu)}
+.box b{color:var(--tx)}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+nav button,.bm button{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:6px 12px}
+nav button[aria-pressed=true],.bm button[aria-pressed=true]{background:var(--ac);color:#06241d;border-color:var(--ac);font-weight:700}
+.bm{display:flex;gap:6px;margin-bottom:10px;align-items:center;color:var(--mu);font-size:13px}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.row h3{margin:0;font-size:15px}.row p{margin:0;color:var(--mu);font-size:12.5px}
+.row .buy{grid-row:1/3;grid-column:2;min-width:112px;background:var(--ac);color:#06241d;border:0;border-radius:8px;padding:8px;font-weight:700;text-align:center}
+.row .buy:disabled{background:#262d5c;color:#6c76b0;cursor:not-allowed}
+.row.done{opacity:.55}.row.lock{opacity:.4}
+.row.gold{border-color:var(--au)}
+#g{position:fixed;z-index:6;border:0;border-radius:50%;width:56px;height:56px;background:radial-gradient(circle,#fff,#ffcf5c);box-shadow:0 0 30px var(--au);font-size:26px;color:#7a4a00}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#000c;border:1px solid var(--ln);padding:8px 14px;border-radius:10px;z-index:7;max-width:90vw;display:none}
+textarea{width:100%;height:90px;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:8px;font:12px monospace}
+.btn{background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:8px 14px;margin:6px 6px 0 0}
+/* ドット絵スタイル */
+body{background-image:radial-gradient(#ffffff1c 1.2px,transparent 1.3px);background-size:18px 18px;-webkit-font-smoothing:none;text-rendering:optimizeSpeed}
+b,h1,h3,.big,button{font-weight:400}
+button,textarea{font-family:inherit;border-radius:0}
+button:active{transform:translateY(2px)}
+.row,.box,nav button,.bm button,.btn,.row .buy,#toast,textarea{border:0;border-radius:0;box-shadow:0 -3px 0 var(--ln),0 3px 0 var(--ln),-3px 0 0 var(--ln),3px 0 0 var(--ln)}
+.row .buy{box-shadow:0 -3px 0 #06241d,0 3px 0 #06241d,-3px 0 0 #06241d,3px 0 0 #06241d}
+nav button[aria-pressed=true],.bm button[aria-pressed=true]{box-shadow:0 -3px 0 #fff,0 3px 0 #fff,-3px 0 0 #fff,3px 0 0 #fff}
+.row.gold,#pm{box-shadow:0 -3px 0 var(--au),0 3px 0 var(--au),-3px 0 0 var(--au),3px 0 0 var(--au)}
+.row{margin:3px 3px 14px}.box{margin:3px 3px 10px}nav{gap:12px;margin:3px}.bm{gap:12px;margin:3px 3px 14px}
+#pm{width:calc(100% - 6px)!important;margin:3px 3px 13px!important}
+textarea{width:calc(100% - 6px);margin:3px}.btn{margin:10px 10px 0 3px}
+.row p,.box,.bm,.sub{font-size:16px}.row .buy{min-width:128px}
+.big{font-size:32px;text-shadow:4px 4px 0 #7a4a00;letter-spacing:.04em}@media(min-width:420px){.big{font-size:48px}}
+.fl{text-shadow:2px 2px 0 #000;font-size:18px}
+#star{filter:drop-shadow(6px 6px 0 #0a0620)}
+#g{border-radius:0;box-shadow:0 0 0 4px #7a4a00,0 0 30px var(--au)}
+[hidden]{display:none!important}
+select{font:inherit;background:var(--bg);color:var(--tx);border:0;border-radius:0;box-shadow:0 0 0 3px var(--ln);padding:4px 6px;max-width:100%}
+#p-cos .btn{margin:8px 10px 0 3px}#p-cos .btn[aria-pressed=true]{background:var(--ac);color:#06241d}
+#au .btn{margin:10px 10px 0 3px}#au .btn[aria-pressed=true]{background:var(--ac);color:#06241d}
+</style></head><body>
+<main>
+<section>
+<h1>Stella idle Clicker</h1>
+<div class="big" id="d">0</div>
+<p class="sub" id="ps">毎秒 0</p>
+<button id="star" aria-label="星を磨く"></button>
+<button class="btn" id="pm" hidden style="width:100%;margin:0 0 10px;border-color:var(--au);color:var(--au);font-weight:700"></button><div class="box" id="st"></div><div class="box" id="au" hidden></div>
+</section>
+<section>
+<nav id="tabs"></nav>
+<div id="p-gen"><div class="bm" id="bm">購入数</div><div id="gens"></div></div>
+<div id="p-up" hidden></div>
+<div id="p-pre" hidden></div>
+<div id="p-inf" hidden></div><div id="p-eter" hidden></div><div id="p-uni" hidden></div><div id="p-cos" hidden></div><div id="p-rp" hidden></div><div id="p-ach" hidden></div>
+<div id="p-sv" hidden>
+<p class="sub">進行状況はこのブラウザに自動保存されます。別の端末へ移すときは書き出して貼り付けてください。</p>
+<textarea id="ta" aria-label="セーブデータ"></textarea><br>
+<button class="btn" id="ex">書き出す</button><button class="btn" id="im">読み込む</button><button class="btn" id="rs">全消去</button>
+</div>
+</section>
+</main>
+<div id="toast" role="status"></div>
+<script>
+const U4=['','万','億','兆','京','垓','𥝱','穣','溝','澗','正','載','極'];
+const f=x=>{if(!isFinite(x))return'∞';if(x<1e4)return x<100&&x%1?x.toFixed(1):Math.floor(x)+'';const i=Math.floor(Math.log10(x)/4);return i>12?x.toExponential(2):(x/1e4**i).toFixed(2)+U4[i]};
+const G=[['星屑拾い',15,.1],['流星網',100,1],['彗星鉱山',1100,8],['月の精錬炉',12e3,47],['恒星鍛造所',13e4,260],['銀河紡績',14e5,1400],['星雲工場',2e7,7800],['宇宙卵',33e7,44e3],['時の砂時計',51e8,26e4]];
+const MS=[25,50,100,200,400];
+['星海の渦','暗黒物質炉','重力井戸','事象の地平線','銀河団の鍛冶場','真空の泉','次元の織機','因果の織機','多元宇宙の種','時空の織り手','原初の炎','無限の蓄音機','虚空の図書館','星々の記憶','創世の槌','終焉の砂'].forEach((n,k)=>G.push([n,5.1e9*40**(k+1),2.6e5*30**(k+1)]));
+{const P1=['星','月','陽','銀河','虚空','時','因果','原初','終焉','無限','創世','暗黒','光','夢','記憶','運命','魂','幻','神','宇宙','次元','混沌','秩序','永遠'],S1=['炉','工房','塔','泉','織機','炎','庭','門'];for(let t=17;t<=191;t++){const k=t-17;G.push([P1[k%24]+'の'+S1[Math.floor(k/24)],5.1e9*40**16*30**(t-16),2.6e5*30**16*25**(t-16)])}}
+const UP=[
+{id:'c1',n:'指先の熱',d:'クリック ×2',c:200,v:()=>1,t:'c',m:2},
+{id:'c2',n:'磨き布',d:'クリック ×5',c:1e5,v:()=>S.all>=2e4,t:'c',m:5},
+{id:'cp',n:'共鳴',d:'クリックが毎秒産出の3%も生む',c:5e4,v:()=>S.all>=1e4,t:'cp'},
+{id:'g1',n:'星の羅針盤',d:'全体 ×1.5',c:5e3,v:()=>S.all>=1e3,t:'G',m:1.5},
+{id:'g2',n:'工房の拡張',d:'全体 ×2',c:2e6,v:()=>S.all>=4e5,t:'G',m:2},
+{id:'g3',n:'二重螺旋',d:'全体 ×3',c:5e8,v:()=>S.all>=1e8,t:'G',m:3},
+{id:'g4',n:'銀河の潮汐',d:'全体 ×5',c:1e11,v:()=>S.all>=2e10,t:'G',m:5},
+{id:'g5',n:'因果の歯車',d:'全体 ×10',c:3e13,v:()=>S.all>=6e12,t:'G',m:10}];
+G.slice(0,25).forEach((g,i)=>{UP.push({id:'a'+i,n:g[0]+'の改良',d:g[0]+' ×3',c:g[1]*15,v:()=>S.n[i]>=1,t:'g',i,m:3},{id:'b'+i,n:g[0]+'の極意',d:g[0]+' ×3',c:g[1]*3e3,v:()=>S.n[i]>=10,t:'g',i,m:3})});
+const PU=[['初期星屑','超新星のあと、星屑1億から再開',1],['黄金の星','黄金の星の出現間隔が半分',3],['自動購入','施設を毎秒1基ずつ自動で買い足す',5],['星の記憶','全体 ×2',10],['指の達人','クリック ×10',20],['時間旅行','放置の稼ぎが100%反映(通常は50%)',50]];
+const A=[];
+[1e3,1e6,1e9,1e12,1e15,1e18].forEach(v=>A.push(['星屑の山 '+f(v),'累計で星屑を'+f(v)+'集める',()=>S.all>=v]));
+[100,1e3,1e4].forEach(v=>A.push(['クリック職人 '+v,'星を'+v+'回磨く',()=>S.clicks>=v]));
+[50,200,500,1000].forEach(v=>A.push(['施設 '+v+'基','施設を合計'+v+'基持つ',()=>S.n.reduce((a,b)=>a+b,0)>=v]));
+[1,5,20].forEach(v=>A.push(['超新星 '+v+'回','超新星を'+v+'回起こす',()=>S.runs>=v]));
+[1,10,50].forEach(v=>A.push(['黄金の星 '+v,'黄金の星を'+v+'個つかまえる',()=>S.gold>=v]));
+[1,10,100,500].forEach(v=>A.push(['インフィニティ '+v,'インフィニティに通算'+v+'回到達する',()=>S.infAll>=v]));
+[1,1e3,1e30,1e100].forEach(v=>A.push(['新星の輝き '+f(v),'新星ポイントを'+f(v)+'まで貯める',()=>S.ilMax>=Math.log10(v)]));
+[1,5,20].forEach(v=>A.push(['エタニティ '+v,'エタニティに'+v+'回到達する',()=>S.eter>=v]));
+A.push(['限界突破','星屑が1e308に到達する',()=>S.tl>=308],['増幅の達人','新星の増幅をLv100にする',()=>S.amp>=100]);
+let T={};const R=(a,b,s)=>{const o=[];for(let k=a;k<=b;k+=s)o.push(k);return o},E=k=>10**k;
+const mk=(c,d,vs,fn,fm=f)=>vs.forEach(v=>A.push([c+' '+fm(v),d.replace('#',fm(v)),()=>fn(v)]));
+mk('星屑の大海','累計で星屑を#集める',R(21,306,3).map(E),v=>S.all>=v);
+mk('産出の奔流','毎秒の産出が#に達する',R(4,300,4).map(E),v=>T.dps>=v);
+mk('倍率の塔','全体倍率が×#に達する',R(4,288,4).map(E),v=>T.gm>=v);
+mk('指先の閃光','1回のクリックで#稼ぐ',R(3,150,3).map(E),v=>T.cv>=v);
+mk('星核の山','星核を累計#個集める',R(1,141,4).map(E),v=>S.cl>=Math.log10(v));
+mk('新星の海','新星ポイントを#まで貯める',R(5,305,10).map(E),v=>S.ilMax>=Math.log10(v));
+G.slice(0,9).forEach((g,i)=>mk(g[0]+'の主','#基の'+g[0]+'を同時に所持する',[10,25,50,100,150,200,300,400,500,750,1000],v=>S.n[i]>=v,v=>v));
+mk('クリック職人','星を#回磨く',[3e4,1e5,3e5,1e6,3e6,1e7,3e7,1e8,3e8,1e9],v=>S.clicks>=v);
+mk('施設の王国','施設を合計#基持つ',[1500,2000,3000,5000,7500,1e4],v=>S.n.reduce((a,b)=>a+b,0)>=v);
+mk('超新星の使い手','超新星を#回起こす',[50,100,200,500,1e3,2e3,5e3,1e4],v=>S.runs>=v,v=>v);
+mk('黄金の収集家','黄金の星を#個つかまえる',[100,200,500,1e3,2e3,5e3],v=>S.gold>=v,v=>v);
+mk('無限の旅人','インフィニティに通算#回到達する',[1e3,2500,5e3,1e4],v=>S.infAll>=v,v=>v);
+mk('増幅の極み','新星の増幅をLv#にする',[10,25,50,150,200,250,300,350,400,440],v=>S.amp>=v,v=>v);
+mk('新星の蔵','新星の強化を#個取得する',[1,2,3,4,5,6],v=>Object.keys(S.ipu).length>=v,v=>v);
+mk('永遠の旅人','エタニティに#回到達する',[50,100,250,500,1e3],v=>S.eter>=v,v=>v);
+mk('超新星の輝き','超新星ポイントを#まで貯める',[1,10,100,1e3,1e4,1e6,1e9,1e12,1e20,1e50,1e100,1e200,1e300],v=>S.elMax>=Math.log10(v));
+mk('超新星の増幅','超新星の増幅をLv#にする',[1,5,10,25,50,100,200,300,400],v=>S.eamp>=v,v=>v);
+mk('永遠の蔵','エタニティの強化を#個取得する',[1,2,3],v=>Object.keys(S.epu).length>=v,v=>v);
+mk('実績コレクター','実績を#個解放する',[50,100,150,200,250,300,350,400,450,500,550],v=>Object.keys(S.ach).length>=v,v=>v);
+mk('時を紡ぐ者','合計#時間遊ぶ',[1,2,5,10,24,48,72,100,150,200,300,500,750,1e3,2e3],v=>S.pt>=v*3600,v=>v);
+A.push(['完全制覇','ほかのすべての実績を解放する',()=>Object.keys(S.ach).length>=A.length-1]);
+G.slice(9,25).forEach((g,j)=>mk(g[0]+'の覇者','#基の'+g[0]+'を同時に所持する',[50,200,1000],v=>S.n[j+9]>=v,v=>v));
+mk('新星の大蔵','新星の強化を#個取得する',[10,20,30,40,48],v=>Object.keys(S.ipu).length>=v,v=>v);
+mk('永遠の大蔵','エタニティの強化を#個取得する',[5,10,15,22],v=>Object.keys(S.epu).length>=v,v=>v);
+mk('超新星の光','超新星ポイントを1e#まで貯める',R(400,2400,200),v=>S.elMax>=v,v=>v);
+mk('永遠の宝物殿','エタニティの強化を#個取得する',[30,40,50],v=>Object.keys(S.epu).length>=v,v=>v);
+mk('惑星の開拓者','惑星を#個解放する',[1,3,5,8],v=>S.pls.filter(x=>x).length>=v,v=>v);
+mk('星座の観測者','星座を#個発見する',[1,4,8,12],v=>S.cons.filter(x=>x).length>=v,v=>v);
+mk('星座の達人','星座のLvを合計#にする',[10,30,60,100],v=>S.cons.reduce((a,b)=>a+b,0)>=v,v=>v);
+mk('闇の底','ブラックホール質量が#に達する',[1e10,1e50,1e100,1e200,1e300],v=>S.bh>=v);
+mk('暗黒の宝庫','暗黒物質を#持つ',[1e3,1e6,1e9,1e12,1e15],v=>S.dm>=v);
+mk('銀河の主','銀河のLvを合計#にする',[5,25,50,100,150],v=>S.gx.reduce((a,b)=>a+b,0)>=v,v=>v);
+mk('銀河団','銀河を#個形成する',[1,3,6],v=>S.gx.filter(x=>x).length>=v,v=>v);
+mk('星屑の限界','今回の累計星屑を1e#に到達させる',[350,400,500,700,1000,1500,2000],v=>S.tl>=v,v=>v);
+mk('新星の深淵','新星ポイントを1e#まで貯める',[400,600,800,1200,1600,2000],v=>S.ilMax>=v,v=>v);
+mk('ユニティの深淵','ユニティポイントを1e#まで貯める',[100,200,300,400,600],v=>S.ulMax>=v,v=>v);
+mk('星核の大海','星核を累計1e#個集める',R(150,1000,50),v=>S.cl>=v,v=>v);
+mk('惑星の大航海','惑星を#個解放する',[12,16],v=>S.pls.filter(x=>x).length>=v,v=>v);
+mk('星座の大観測','星座を#個発見する',[18,24],v=>S.cons.filter(x=>x).length>=v,v=>v);
+mk('星座の極み','星座のLvを合計#にする',[150,200,240],v=>S.cons.reduce((a,b)=>a+b,0)>=v,v=>v);
+mk('銀河の大集団','銀河を#個形成する',[9,12],v=>S.gx.filter(x=>x).length>=v,v=>v);
+mk('銀河の覇者','銀河のLvを合計#にする',[200,250,300],v=>S.gx.reduce((a,b)=>a+b,0)>=v,v=>v);
+mk('終わりなき道','無限強化のLvを合計#にする',[10,100,1000,1e4,1e5],v=>Object.values(S.rl).flat().reduce((a,b)=>a+b,0)>=v);
+G.slice(25).forEach((g,j)=>mk(g[0]+'の頂','#基の'+g[0]+'を同時に所持する',[100],v=>S.n[j+25]>=v,v=>v));
+mk('神速のインフィニティ','インフィニティに#秒以内で到達する',[3600,1800,900,600,300,120,60,30,10],v=>S.fastInf<=v,v=>v);
+A.push(['無血のインフィニティ','超新星を一度も起こさずにインフィニティに到達する',()=>S.noNova==1]);
+mk('神速のエタニティ','エタニティに#秒以内で到達する',[7200,3600,1800,600,300,60],v=>S.fastEter<=v,v=>v);
+mk('神速のユニティ','ユニティに#秒以内で到達する',[86400,43200,21600,7200,3600],v=>S.fastUni<=v,v=>v);
+mk('星屑の極限','今回の累計星屑を1e#に到達させる',[3000,5000,1e4,2e4],v=>S.tl>=v,v=>v);
+mk('新星の極限','新星ポイントを1e#まで貯める',[3000,5000,1e4],v=>S.ilMax>=v,v=>v);
+mk('ユニティの極限','ユニティポイントを1e#まで貯める',[1000,2000,5000,1e4],v=>S.ulMax>=v,v=>v);
+mk('星核の極限','星核を累計1e#個集める',[2000,5000,1e4],v=>S.cl>=v,v=>v);
+A.push(['全強化・新星','新星の強化をすべて取得する',()=>Object.keys(S.ipu).length>=IPU.length],['全強化・超新星','超新星の強化をすべて取得する',()=>Object.keys(S.pu).length>=PU.length],['全強化・エタニティ','エタニティの強化をすべて取得する',()=>Object.keys(S.epu).length>=EPU.length],['全強化・ユニティ','ユニティの強化をすべて取得する',()=>Object.keys(S.unu).length>=UNU.length]);
+['pu','inf','eter','uni'].forEach((g,k)=>{const nm=['超新星','インフィニティ','エタニティ','ユニティ'][k];mk(nm+'の果て',nm+'の無限強化のLvを合計#にする',[1000,1e4],v=>S.rl[g].reduce((a,b)=>a+b,0)>=v,v=>v)});
+mk('不屈のクリッカー','星を#回磨く',[1e10,1e11,1e12],v=>S.clicks>=v);
+mk('黄金の猶人','黄金の星を#個つかまえる',[1e4,2e4],v=>S.gold>=v,v=>v);
+mk('超新星の王','超新星を#回起こす',[2e4,5e4,1e5],v=>S.runs>=v,v=>v);
+mk('無限の王','インフィニティに通算#回到達する',[2e4,5e4,1e5],v=>S.infAll>=v,v=>v);
+mk('永遠の王','エタニティに#回到達する',[2500,5000,1e4],v=>S.eter>=v,v=>v);
+mk('統一の王','ユニティに#回到達する',[1000,2500,5000,1e4],v=>S.uni>=v,v=>v);
+mk('永き旅路','合計#時間遊ぶ',[3000,5000,1e4],v=>S.pt>=v*3600,v=>v);
+while(A.length<1000)A.push(['星の記録 '+(A.length+1),'合計'+(A.length*10)+'時間遊ぶ',(n=>()=>S.pt>=n*36000)(A.length)]);
+A.splice(1000);
+mk('ユニティの旅人','ユニティに#回到達する',[1,5,10,25,50,100,250,500],v=>S.uni>=v,v=>v);
+mk('ユニティの輝き','ユニティポイントを#まで貯める',[1,1e3,1e10,1e30,1e100,1e200],v=>S.ulMax>=Math.log10(v));
+mk('ユニティの蔵','ユニティの強化を#個取得する',[5,10,20,30,40],v=>Object.keys(S.unu).length>=v,v=>v);
+mk('ユニティの増幅','ユニティの増幅をLv#にする',[10,50,100,200,300,440],v=>S.uamp>=v,v=>v);
+const K='stardust-kobo-1';
+const def=()=>({d:0,t:0,all:0,n:G.map(_=>0),up:{},core:0,sp:0,pu:{},clicks:0,ach:{},runs:0,gold:0,last:Date.now(),buff:{},ip:0,inf:0,infAll:0,ipMax:0,amp:0,ipu:{},ep:0,eter:0,eamp:0,epu:{},pt:0,epMax:0,off:{},el:-9,elMax:-9,un:0,uni:0,unMax:0,uamp:0,unu:{},bh:0,dm:0,pls:[0,0,0,0,0,0,0,0],plc:[-1,-1,-1,-1,-1,-1,-1,-1],cons:[0,0,0,0,0,0,0,0,0,0,0,0],bhAuto:false,gx:[0,0,0,0,0,0],tl:-9,itg:308,il:-9,ilMax:-9,ul:-9,ulMax:-9,cl:-9,spl:-9,rl:{pu:[0,0,0],inf:[0,0,0],eter:[0,0,0],uni:[0,0,0]},rt:0,rn:0,fastInf:1e12,noNova:0,rtE:0,fastEter:1e12,rtU:0,fastUni:1e12});
+let S=def(),bm=1,tab='gen',armed=0,offMsg='';
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(def(),JSON.parse(r))}catch(e){}
+S.n=G.map((_,i)=>S.n[i]||0);if(S.ep>0){S.el=Math.max(S.el,Math.log10(S.ep));S.ep=0}if(S.epMax>0)S.elMax=Math.max(S.elMax,Math.log10(S.epMax));if(S.t>0&&S.tl<=-9)S.tl=Math.log10(S.t);if(S.ip>0){S.il=Math.max(S.il,Math.log10(S.ip));S.ip=0}if(S.ipMax>0)S.ilMax=Math.max(S.ilMax,Math.log10(S.ipMax));if(S.un>0){S.ul=Math.max(S.ul,Math.log10(S.un));S.un=0}if(S.unMax>0)S.ulMax=Math.max(S.ulMax,Math.log10(S.unMax));if(S.core>0){S.cl=Math.max(S.cl,Math.log10(S.core));S.core=0}if(S.sp>0){S.spl=Math.max(S.spl,Math.log10(S.sp));S.sp=0}
+const now=()=>Date.now();
+const genM=i=>{let m=2**MS.filter(x=>S.n[i]>=x).length*(i<9?EFo.gl:EFo.gh);GU=GU||G.map((_,j)=>UP.filter(u=>u.t=='g'&&u.i===j));for(const u of GU[i])if(S.up[u.id])m*=u.m;return m};
+const gM=()=>{let m=10**(3*coreL())*(1+(.02+EFo.ab/100)*Object.keys(S.ach).length);if(S.ipu[2])m*=1e10;m*=EFo.gm*10**(EFo.ge*Math.max(S.el,0));m*=(1+Math.log10(1+S.bh))**2;if(S.ipu[4])m*=10**(.3*Math.max(S.il,0));for(const u of UP)if(u.t=='G'&&S.up[u.id])m*=u.m;if(S.pu[3])m*=2;if(S.buff.x7>now())m*=7;return Math.min(m,1e290)};
+const dps=()=>Math.min(G.reduce((a,g,i)=>a+g[2]*S.n[i]*genM(i),0)*gM(),1e300);
+const cval=()=>{let m=1;for(const u of UP)if(u.t=='c'&&S.up[u.id])m*=u.m;if(S.pu[4])m*=10;if(S.buff.cl>now())m*=77;return(1+(S.up.cp?dps()*.03:0))*m*10**coreL()*EFo.cl};
+const cost=(i,k)=>G[i][1]*1.15**S.n[i]*(1.15**k-1)/.15/EFo.cd;
+const maxk=i=>Math.max(0,Math.floor(Math.log(1+Math.min(S.d/(G[i][1]*1.15**S.n[i])*EFo.cd*.15,1e300))/Math.log(1.15)));
+const kOf=i=>bm?bm:Math.max(1,maxk(i));
+const add=x=>{const C=1.7e308;x=Math.min(x,C);S.d=Math.min(S.d+x,C);S.t=Math.min(S.t+x,C);S.all=Math.min(S.all+x,C)};
+const gain=()=>Math.min(Math.floor(Math.sqrt(S.t/1e9)*(S.ipu[5]?10:1)*EFo.cg),1e300);
+const $=id=>document.getElementById(id);
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display='none',3200)}
+function buy(i){const k=kOf(i),c=cost(i,k);if(S.d>=c){S.d-=c;S.n[i]+=k}}
+// 画面の骨組み
+const TB=[['gen','施設'],['up','強化'],['pre','超新星'],['inf','新星'],['eter','エタニティ'],['uni','ユニティ'],['cos','宇宙'],['rp','無限強化'],['ach','実績'],['sv','セーブ']];
+$('tabs').innerHTML=TB.map(t=>`<button data-t="${t[0]}" aria-pressed="${t[0]==tab}">${t[1]}</button>`).join('');
+$('tabs').onclick=e=>{const t=e.target.dataset.t;if(!t)return;tab=t;TB.forEach(x=>$('p-'+x[0]).hidden=x[0]!=t);[...$('tabs').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.t==t));if(t=='sv')$('ta').value=''};
+$('bm').innerHTML='購入数'+[[1,'×1'],[10,'×10'],[100,'×100'],[0,'最大']].map(b=>`<button data-b="${b[0]}" aria-pressed="${b[0]==bm}">${b[1]}</button>`).join('');
+$('bm').onclick=e=>{const b=e.target.dataset.b;if(b==null)return;bm=+b;[...$('bm').querySelectorAll('button')].forEach(x=>x.setAttribute('aria-pressed',x.dataset.b==b))};
+$('gens').innerHTML=G.map((g,i)=>`<div class="row" id="r${i}"><h3>${g[0]} <span id="o${i}"></span></h3><p id="e${i}"></p><button class="buy" data-i="${i}"></button></div>`).join('');
+$('gens').onclick=e=>{const i=e.target.closest('.buy')?.dataset.i;if(i!=null)buy(+i)};
+// 強化
+let upKey='';
+function renderUp(){const l=UP.filter(u=>!S.up[u.id]&&u.v());const k=l.map(u=>u.id).join();if(k==upKey)return;upKey=k;
+$('p-up').innerHTML=l.length?l.map(u=>`<div class="row"><h3>${u.n}</h3><p>${u.d}</p><button class="buy" data-u="${u.id}">${f(u.c)}</button></div>`).join(''):'<p class="sub">いまある強化はすべて購入済みです。施設を増やすと新しい強化が現れます。</p>'}
+$('p-up').onclick=e=>{const id=e.target.dataset.u;if(!id)return;const u=UP.find(x=>x.id==id);if(S.d>=u.c){S.d-=u.c;S.up[id]=1;upKey=''}};
+// 超新星
+function renderPreOld(){const av=S.core-S.sp,g=gain();
+$('p-pre').innerHTML=`<div class="box" style="margin-bottom:10px">星を崩壊させると、施設と強化を失う代わりに<b>星核</b>を得ます。星核は1つにつき全体の産出を+10%し、下の永続強化にも使えます。<br>所持 <b>${f(S.core-S.sp)}</b>(累計 ${f(S.core)}) ／ 今回の獲得 <b>${g}</b></div>
+<div class="row gold"><h3>超新星を起こす</h3><p>${g>=1?'星核を'+g+'個得られます':'累計1億×10の星屑で最初の星核が得られます'}</p><button class="buy" id="nova" ${g<1?'disabled':''}>${armed?'本当に?':'起こす'}</button></div>`+
+PU.map((p,i)=>`<div class="row ${S.pu[i]?'done':''}"><h3>${p[0]}</h3><p>${p[1]}</p><button class="buy" data-p="${i}" ${S.pu[i]||av<p[2]?'disabled':''}>${S.pu[i]?'取得済み':'星核 '+f(p[2])}</button></div>`).join('')}
+$('p-pre').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+if(b.id=='nova'){if(!armed){armed=1;setTimeout(()=>{armed=0;renderPre()},3000);renderPre();return}armed=0;nova();return}
+const i=+b.dataset.p,p=PU[i];if(S.core-S.sp>=p[2]&&!S.pu[i]){S.sp+=p[2];S.pu[i]=1;renderPre()}};
+function nova(q){const g=gainL();S.cl=ladd(S.cl,g);S.runs++;S.rn++;S.d=Math.max(S.pu[0]?1e8:0,EFo.sd);S.t=S.d;S.tl=S.d>0?Math.log10(S.d):-9;S.n=G.map(_=>0);S.up={};S.buff={};upKey='';if(!q){renderPre();toast('超新星! 星核を'+fL(g)+'個得ました')}}
+// 実績
+let achN=-1;
+function renderAch(){const n=Object.keys(S.ach).length;if(n==achN)return;achN=n;
+$('p-ach').innerHTML=`<p class="sub">解放 ${n} / ${A.length}  (1つにつき全体 +2% → 現在 +${n*2}%)</p>`+A.map((a,i)=>`<div class="row ${S.ach[i]?'':'lock'}"><h3>${S.ach[i]?a[0]:'???'}</h3><p>${a[1]}</p></div>`).join('')}
+// 新星(インフィニティ)・エタニティ
+const IC=1e308,ipGain=()=>Math.floor(Math.min(5**S.amp*(S.epu[0]?1e6:1)*EFo.ip*10**(Math.max(0,Math.min(S.tl,3000)-308)/(50/(1+EFo.ov))),1.7e308)),epGain=()=>Math.floor(Math.min(5**S.eamp*EFo.ep,1.7e308));
+const coreStart=()=>Math.max(EFo.sc,S.epu[1]?1e30:S.ipu[0]?1e6:0);
+const coreStartL=()=>{const v=coreStart();return v>0?Math.log10(v):-9};
+const IPU=[['星核の種','インフィニティ後、星核1e6個から再開',3],['自動超新星','獲得できる星核が所持数以上になると自動で超新星',10],['新星の加速','全体 ×1e10',30],['自動インフィニティ','到達した瞬間に自動でインフィニティ',300],['新星の共鳴','全体 ×(新星ポイント+1)^0.3',1e3],['星核の奔流','超新星の星核獲得 ×10',1e4]];
+const EPU=[['新星の奔流','新星ポイント獲得 ×1e6',1],['星核の泉','インフィニティ後、星核1e30個から再開',5],['自動増幅','新星の増幅を毎秒自動で購入',20]];
+const KN={gm:['星の恵み','全体 ×#'],gl:['前半施設の祝福','前半9施設の産出 ×#'],gh:['後半施設の祝福','後半16施設の産出 ×#'],cl:['指先の祈り','クリック ×#'],cd:['値引きの星','施設の価格 1/#'],ip:['新星の贈り物','新星ポイント獲得 ×#'],cg:['星核の湧水','超新星の星核獲得 ×#'],gf:['黄金の呼び声','黄金の星の出現が#倍速い'],gb:['黄金の恵み','黄金の星の星屑量 ×#'],of:['夢見る工房','放置の稼ぎが100%反映'],sd:['星屑の蓄え','リセット後、星屑#から再開'],au:['自動強化','強化を毎秒、買える順に自動購入'],ak:['自動クリック','毎秒#回、自動でクリック'],ep:['永遠の贈り物','超新星ポイント獲得 ×#'],ge:['永遠の共鳴','全体 ×(超新星ポイント+1)^#'],ab:['実績の輝き','実績1個あたりの全体効果 +#%'],ai:['新星の自動購入','新星の強化を毎秒自動購入'],sc:['星核の泉','リセット後、星核#個から再開']};
+const gen=(kinds,vals,pre,cf)=>{const q={},o=[];let go=1,j=0;kinds.forEach(k=>q[k]=0);while(go){go=0;for(const k of kinds){const i=q[k];if(i<vals[k].length){go=1;q[k]++;const v=vals[k][i];o.push([pre+KN[k][0]+'ⅠⅡⅢⅣⅤⅥⅦⅧ'[i],KN[k][1].replace('#',f(v)),cf(j++),k,v])}}}return o};
+IPU.push(...gen(['gm','cl','cd','ip','gl','gh','cg','ak','sd','gb','gf','of','au'],{gm:[1e3,1e6,1e10,1e15,1e22,1e30,1e40,1e50],gl:[1e5,1e12,1e25,1e45],gh:[1e5,1e12,1e25,1e45],cl:[1e3,1e8,1e15,1e25],cd:[10,1e3,1e6,1e12],ip:[2,5,10,100,1e4],cg:[10,1e3,1e6],gf:[2,4],gb:[10,1e3],of:[1],sd:[1e12,1e50],au:[1],ak:[10,100]},'',j=>+(10**(4+1.2*j+.11*j*j)).toPrecision(2)));
+EPU.push(...gen(['gm','ip','ep','ge','cd','ab','ai','sc'],{gm:[1e20,1e50,1e100,1e200],ip:[1e3,1e10,1e30,1e100],ep:[10,1e4],ge:[.5,1],cd:[1e20,1e50],ab:[1,3],ai:[1],sc:[1e60,1e100]},'極・',j=>+(10**(1+1.2*j+.12*j*j)).toPrecision(2)));
+PU.push(...gen(['gm','cl','cd','cg','gb','gf','sd','ak','ab','gl','gh'],{gm:[3,10,100,1e4,1e6],cl:[10,1e3],cd:[10,1e3],cg:[3,10],gb:[3,10],gf:[2],sd:[1e15],ak:[5],ab:[1],gl:[10],gh:[10]},'星核・',j=>+(10**(2+.9*j+.04*j*j)).toPrecision(2)));
+Object.assign(KN,{un:['ユニティの贈り物','ユニティポイント獲得 ×#'],ae:['自動エタニティ','1e308に届くと自動でエタニティ'],ki:['記憶の保存','エタニティ後も新星の強化を保持'],ke:['永遠の保存','ユニティ後もエタニティの強化を保持']});
+const UNU=gen(['gm','ip','ep','cd','cl','gl','gh','cg','ak','ab','gb','gf','sd','sc','ae','ki','ke','ge','un'],{gm:[1e5,1e15,1e30,1e60,1e100],ip:[1e5,1e20,1e50,1e100,1e150],ep:[10,1e3,1e6,1e10,1e20],cd:[1e30,1e60,1e100],cl:[1e20,1e50],gl:[1e20,1e50],gh:[1e20,1e50],cg:[1e6,1e12],ak:[1000],ab:[2,5],gb:[1e5],gf:[2],sd:[1e100],sc:[1e150],ae:[1],ki:[1],ke:[1],ge:[.5],un:[2,10,100]},'ユニ・',j=>+(10**(.5+.9*j+.07*j*j)).toPrecision(2));
+PU.push(...gen(['gm','gl','gh','cl','cd','cg','gb','gf','ip','sd','ak'],{gm:[1e8,1e12,1e20,1e30,1e45],gl:[1e3,1e8,1e15],gh:[1e3,1e8,1e15],cl:[1e5,1e10],cd:[1e6,1e12],cg:[100,1e4],gb:[100,1e4],gf:[2],ip:[2,10,100],sd:[1e30],ak:[20]},'核心・',j=>+(10**(2+.9*(j+19)+.04*(j+19)**2)).toPrecision(2)));
+EPU.push(...gen(['gm','ip','ep','ge','cl','gb','gf','ab','sc','un','ak'],{gm:[1e30,1e60,1e120],ip:[1e5,1e15,1e30,1e50],ep:[1e3,1e6,1e10,1e15,1e25,1e40],ge:[.5,1],cl:[1e50,1e100],gb:[1e10,1e50],gf:[2],ab:[5,10],sc:[1e200,1e250],un:[2,10,100],ak:[1e4]},'極限・',j=>+(63*(2466/63)**(j/27)).toFixed(1)).map(p=>{const l=p[2];p[2]=l<300?10**l:Infinity;p[5]=l;return p}));
+const PN=['水星','金星','地球','火星','木星','土星','天王星','海王星','冥王星','ケレス','エリス','ハウメア','マケマケ','セドナ','月','太陽'],PP=[1,1.25,1.5,1.75,2,2.5,3,4,5,6,7.5,9,11,14,18,25],PC=[50,1e3,2e4,5e5,1e7,2e8,5e9,1e11,3e12,1e14,5e15,2e17,1e19,5e20,2e22,1e24];
+const CON=[['おひつじ座','gm',1e3,'全体 ×'],['おうし座','cl',1e5,'クリック ×'],['ふたご座','gl',1e4,'前半9施設の産出 ×'],['かに座','gh',1e4,'後半16施設の産出 ×'],['しし座','ip',10,'新星ポイント獲得 ×'],['おとめ座','cd',100,'施設の価格 1/'],['てんびん座','cg',100,'星核獲得 ×'],['さそり座','gb',100,'黄金の星の星屑量 ×'],['いて座','gf',2,'黄金の星の出現速度 ×'],['やぎ座','ep',3,'超新星ポイント獲得 ×'],['みずがめ座','ak',5,'毎秒の自動クリック +'],['うお座','ab',1,'実績1個あたりの全体効果 +'],['オリオン座','gm',1e5,'全体 ×'],['カシオペヤ座','gl',1e8,'前半9施設の産出 ×'],['はくちょう座','gh',1e8,'後半16施設の産出 ×'],['こと座','cl',1e8,'クリック ×'],['わし座','ip',100,'新星ポイント獲得 ×'],['ケンタウルス座','ep',10,'超新星ポイント獲得 ×'],['おおぐま座','cg',1e3,'星核獲得 ×'],['こぐま座','un',2,'ユニティポイント獲得 ×'],['ペガスス座','dm',10,'暗黒物質の生成 ×'],['アンドロメダ座','gb',1e4,'黄金の星の星屑量 ×'],['ペルセウス座','ge',.05,'全体 ×(超新星ポイント)^'],['りゅう座','ak',50,'毎秒の自動クリック +']];
+const CD=i=>[1,2,5,10,25,60,150,400,1e3,3e3,1e4,3e4,1e5,3e5,1e6,3e6,1e7,3e7,1e8,3e8,1e9,3e9,1e10,3e10][i],CL=(i,l)=>CD(i)*3**l;
+const GX=[['天の川銀河','gm',10,'全体 ×'],['アンドロメダ銀河','ep',2,'超新星ポイント獲得 ×'],['さんかく座銀河','ip',3,'新星ポイント獲得 ×'],['大マゼラン雲','cl',100,'クリック ×'],['小マゼラン雲','cg',5,'星核獲得 ×'],['ソンブレロ銀河','dm',3,'暗黒物質の生成 ×'],['M87銀河','gm',100,'全体 ×'],['M51渦巻銀河','ip',10,'新星ポイント獲得 ×'],['回転花火銀河','ep',3,'超新星ポイント獲得 ×'],['ブラックアイ銀河','un',2,'ユニティポイント獲得 ×'],['風車銀河','cg',10,'星核獲得 ×'],['車輪銀河','dm',10,'暗黒物質の生成 ×']],GB=[1e5,1e8,1e11,1e14,1e17,1e20,1e24,1e28,1e32,1e36,1e40,1e44],gsyn=()=>1+.02*S.gx.reduce((a,b)=>a+b,0);
+const eff=(k,v,s)=>MUL.includes(k)?v**s:v*s;
+function cosFx(o){S.plc.forEach((c,p)=>{if(c<0||!S.pls[p]||!S.cons[c])return;const[,k,v]=CON[c],s=PP[p]*gsyn()*(1+.5*(S.cons[c]-1));if(MUL.includes(k)){o[k]*=v**s;o.L[k]=(o.L[k]||0)+s*Math.log10(v)}else o[k]+=v*s});S.gx.forEach((L,i)=>{if(L){const k=GX[i][1];o[k]*=GX[i][2]**L;o.L[k]=(o.L[k]||0)+L*Math.log10(GX[i][2])}});for(const k of MUL)o[k]=Math.min(o[k],k=='gm'?1e300:k=='cd'?1e60:1e200)}
+Object.assign(KN,{ov:['超過の増幅','1e308を超えた星屑のボーナス効率 +#']});
+IPU.push(...gen(['ip','ov','gl','gh','cl','cg','gb','sd','ge','ep'],{ip:[1e2,1e4,1e8,1e16],ov:[.5,1,2],gl:[1e60,1e100],gh:[1e60,1e100],cl:[1e60,1e120],cg:[1e20,1e50],gb:[1e20],sd:[1e200],ge:[.25],ep:[1e2,1e5]},'新星・',j=>+(10**(60+220*j/19)).toPrecision(2)));
+PU.push(...gen(['gm','gl','gh','cl','cg','gb','ip','ab','ak','sd','ov'],{gm:[1e50,1e80,1e120,1e160],gl:[1e30,1e60],gh:[1e30,1e60],cl:[1e30,1e60],cg:[1e10,1e30],gb:[1e30],ip:[1e3,1e6,1e10],ab:[3],ak:[100],sd:[1e100],ov:[.5]},'超核・',j=>+(10**(116+24*j/19)).toPrecision(2)));
+UNU.push(...gen(['gm','ip','ep','ov','un','cl','gl','gh','ge'],{gm:[1e100,1e150],ip:[1e50,1e100],ep:[1e30,1e60,1e100],ov:[1,2],un:[1e3,1e6],cl:[1e100],gl:[1e100],gh:[1e100],ge:[.5]},'ユニ極・',j=>+(10**(145+145*j/14)).toPrecision(2)));
+const LP=a=>a.map(p=>{const l=p[2];p[2]=l<300?10**l:Infinity;p[5]=l;return p});
+IPU.push(...LP(gen(['ip','ov','gm','cl','ep','ge','cg','ab'],{ip:[1e50,1e150,1e300,1e500],ov:[3,5],gm:[1e200,1e400,1e800],cl:[1e200,1e400],ep:[1e10,1e30,1e60],ge:[.25,.5],cg:[1e100,1e200],ab:[5,10]},'無限・',j=>+(290+910*j/19).toFixed(1))));
+UNU.push(...LP(gen(['gm','ip','ep','ov','un','ge'],{gm:[1e300,1e600,1e1000],ip:[1e300,1e600],ep:[1e100,1e200,1e300],ov:[4,8],un:[1e10,1e20,1e50],ge:[1,2]},'統一・',j=>+(295+1205*j/14).toFixed(1))));
+PU.push(...LP(gen(['gm','gl','gh','cl','cg','gb','ip','ab','ak','ov','ep'],{gm:[1e200,1e300,1e400],gl:[1e100,1e200],gh:[1e100,1e200],cl:[1e100,1e200],cg:[1e50,1e100],gb:[1e60,1e100],ip:[1e20,1e50,1e100],ab:[5],ak:[1000],ov:[1],ep:[1e5]},'超越・',j=>+(142+108*j/19).toFixed(1))));
+const RP={pu:[['核の増幅','cg',2,3,.5,'星核獲得 ×'],['核の共鳴','gm',3,6,.7,'全体 ×'],['核の加速','cl',10,5,.9,'クリック ×']],inf:[['無限の積層','ip',3,20,.7,'新星ポイント獲得 ×'],['無限の奔流','gm',10,30,1.3,'全体 ×'],['無限の回廊','ep',2,50,1.2,'超新星ポイント獲得 ×']],eter:[['永遠の積層','ep',2,8,.8,'超新星ポイント獲得 ×'],['永遠の奔流','ip',1000,12,1.5,'新星ポイント獲得 ×'],['永遠の回廊','gm',1e5,20,2.2,'全体 ×']],uni:[['統一の積層','un',2,3,.6,'ユニティポイント獲得 ×'],['統一の奔流','ep',10,10,1.1,'超新星ポイント獲得 ×'],['統一の回廊','gm',1e10,20,2.4,'全体 ×']]};
+var GU;
+IPU.push(...LP(gen(['ip','ov','gm','ep','ge','cl','ab'],{ip:[1e1000,1e2000],ov:[10,20],gm:[1e1000,1e2000],ep:[1e500,1e1000],ge:[1,2],cl:[1e1000],ab:[20]},'至高・',j=>+(1300+900*j/11).toFixed(1))));
+PU.push(...LP(gen(['gm','cl','cg','ip','ep','ov','ab','gb','ak'],{gm:[1e500,1e800],cl:[1e500],cg:[1e200,1e400],ip:[1e200,1e400],ep:[1e100],ov:[2],ab:[10],gb:[1e200],ak:[1e4]},'極核・',j=>+(250+600*j/11).toFixed(1))));
+EPU.push(...LP(gen(['ip','ep','gm','ge','cl','ab','un'],{ip:[1e1000,1e2000],ep:[1e200,1e500],gm:[1e500],ge:[1,2],cl:[1e500],ab:[10,20],un:[1e5,1e10]},'終極・',j=>+(2500+1500*j/11).toFixed(1))));
+UNU.push(...LP(gen(['gm','ip','ep','ov','un','ge','ab','cl'],{gm:[1e2000,1e4000],ip:[1e1000,1e3000],ep:[1e1000],ov:[16,32],un:[1e100,1e300],ge:[4],ab:[20],cl:[1e2000]},'統合・',j=>+(1500+2500*j/11).toFixed(1))));
+const coreL=()=>S.cl<5?Math.log10(1+.1*10**S.cl):S.cl-1;
+const lg=k=>EFo.L[k]||0;
+const gML=()=>{let l=3*coreL()+Math.log10(1+(.02+EFo.ab/100)*Object.keys(S.ach).length)+lg('gm')+EFo.ge*Math.max(S.el,0)+2*Math.log10(1+Math.log10(1+S.bh));for(const u of UP)if(u.t=='G'&&S.up[u.id])l+=Math.log10(u.m);if(S.ipu[2])l+=10;if(S.ipu[4])l+=.3*Math.max(S.il,0);if(S.pu[3])l+=.30103;if(S.buff.x7>now())l+=.845;return l};
+const dpsL=()=>{let m=-Infinity;const ls=[];G.forEach((g,i)=>{if(S.n[i]>0){const l=Math.log10(g[2])+Math.log10(S.n[i])+Math.log10(genM(i));ls.push(l);if(l>m)m=l}});if(!ls.length)return -9;let s=0;for(const l of ls)s+=10**(l-m);return m+Math.log10(s)+gML()};
+let EFo={};const MUL='gm gl gh cl cd ip cg gb gf ep un dm'.split(' ');
+function recalcEF(){const o={L:{}};MUL.forEach(k=>o[k]=1);'ak ge ab sd sc of au ai ae ki ke ov'.split(' ').forEach(k=>o[k]=0);for(const[L,st]of[[IPU,S.ipu],[EPU,S.epu],[PU,S.pu],[UNU,S.unu]])L.forEach((u,i)=>{if(!st[i]||!u[3])return;const k=u[3],v=u[4];if(MUL.includes(k)){o[k]*=v;o.L[k]=(o.L[k]||0)+Math.log10(v)}else if(k=='sd'||k=='sc')o[k]=Math.max(o[k],v);else o[k]+=v});for(const[g,arr]of Object.entries(RP))arr.forEach((r,i)=>{const L=S.rl[g][i];if(L){o[r[1]]*=r[2]**L;o.L[r[1]]=(o.L[r[1]]||0)+L*Math.log10(r[2])}});cosFx(o);EFo=o}
+recalcEF();
+const AU=[['fac','施設の自動購入',()=>S.pu[2]],['nova','自動超新星',()=>S.ipu[1]],['inf','自動インフィニティ',()=>S.ipu[3]],['up','強化の自動購入',()=>EFo.au],['ipu','新星強化の自動購入',()=>EFo.ai],['amp','新星の増幅の自動購入',()=>S.epu[2]],['ak','自動クリック',()=>EFo.ak],['eter','自動エタニティ',()=>EFo.ae]];
+$('au').onclick=e=>{const k=e.target.dataset.a;if(k){if(k=='itg'){const T2=[308,358,408,508,708,1008,2008];S.itg=T2[(T2.indexOf(S.itg)+1)%T2.length]}else S.off[k]=!S.off[k];tick.ka=''}};
+function wipe(){S.cl=coreStartL();S.spl=-9;S.pu={};S.rl.pu=[0,0,0];recalcEF();S.d=EFo.sd;S.t=EFo.sd;S.tl=EFo.sd>0?Math.log10(EFo.sd):-9;S.n=G.map(_=>0);S.up={};S.buff={};upKey=''}
+function infinity(){const gl=ipGL();S.il=ladd(S.il,gl);S.ilMax=Math.max(S.ilMax,S.il);S.inf++;S.infAll++;S.fastInf=Math.min(S.fastInf,S.rt);if(!S.rn)S.noNova=1;S.rn=0;S.rt=0;wipe();toast('インフィニティ! 新星ポイント +'+fL(gl))}
+function eternity(){const gl=epGL(),k=EFo.ki;S.el=ladd(S.el,gl);S.eter++;S.fastEter=Math.min(S.fastEter,S.rtE);S.rtE=0;S.rt=0;S.rn=0;S.il=-9;if(!k){S.ipu={};S.rl.inf=[0,0,0]}S.amp=0;S.inf=0;recalcEF();wipe();toast('エタニティ! 超新星ポイント +'+fL(gl))}
+const buyMax=(k,a)=>{let c=0;while(S[k]>=4**S[a]&&c++<1000){S[k]-=4**S[a];S[a]++}};
+const rowU=(l,st,cur)=>l.map((p,i)=>`<div class="row ${st[i]?'done':''}"><h3>${p[0]}</h3><p>${p[1]}</p><button class="buy" data-q="${i}" ${st[i]||cur<p[2]?'disabled':''}>${st[i]?'取得済み':f(p[2])}</button></div>`).join('');
+function renderInfOld(){$('p-inf').innerHTML=`<div class="box" style="margin-bottom:10px">星屑が<b>1e308</b>に届くとインフィニティに到達できます(さらに集めると、50桁ごとに獲得が10倍)。星核・強化・施設を失う代わりに<b>新星ポイント</b>を得ます。<br>新星ポイント <b>${f(S.ip)}</b> ／ 通算 ${S.infAll} 回 ／ 次の獲得 <b>${f(ipGain())}</b><br>新星ポイントが1e308に届くと、エタニティに到達できます。</div><div class="row gold"><h3>新星の増幅 Lv${S.amp}</h3><p>新星ポイント獲得 ×5 (次のコスト ${f(4**S.amp)})</p><button class="buy" data-q="a" ${S.ip<4**S.amp?'disabled':''}>購入</button></div>`+rowU(IPU,S.ipu,S.ip)}
+function renderEterOld(){$('p-eter').innerHTML=`<div class="box" style="margin-bottom:10px">新星ポイントが<b>1e308</b>に届くとエタニティに到達できます。新星ポイントと新星の強化を失う代わりに<b>超新星ポイント</b>を得ます。<br>超新星ポイント <b>${f(S.ep)}</b> ／ 通算 ${S.eter} 回 ／ 次の獲得 <b>${f(epGain())}</b></div><div class="row gold"><h3>超新星の増幅 Lv${S.eamp}</h3><p>超新星ポイント獲得 ×5 (次のコスト ${f(4**S.eamp)})</p><button class="buy" data-q="a" ${S.ep<4**S.eamp?'disabled':''}>購入</button></div>`+rowU(EPU,S.epu,S.ep)}
+$('p-inf').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a')buyMax('ip','amp');else if(S.ip>=IPU[q][2]&&!S.ipu[q]){S.ip-=IPU[q][2];S.ipu[q]=1}renderInf()};
+$('p-eter').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a')buyMax('ep','eamp');else if(S.ep>=EPU[q][2]&&!S.epu[q]){S.ep-=EPU[q][2];S.epu[q]=1}renderEter()};
+$('pm').onclick=()=>{const m=$('pm').dataset.m;if(m=='u')unity();else if(m=='e')eternity();else if(m=='i')infinity()};
+const ladd=(a,b)=>a<=-9?b:b<=-9?a:Math.max(a,b)+Math.log10(1+10**(Math.min(a,b)-Math.max(a,b)));
+const lsub=(a,b)=>{if(b<=-9||a-b>15)return a;const d=1-10**(b-a);return d<=1e-12?-9:a+Math.log10(d)};
+const fL=l=>l<=-9?'0':l<4?f(Math.round(10**l)):l<300?f(10**l):(10**(l%1)).toFixed(2)+'e'+Math.floor(l);
+const epGL=()=>{const l=S.eamp*.69897+lg('ep')+Math.max(0,S.il-308)/200;return l<12?Math.log10(Math.max(1,Math.round(10**l))):l};
+const unGain=()=>Math.floor(Math.min(5**S.uamp*EFo.un,1.7e308));
+function unity(){const gl=unGL();S.ul=ladd(S.ul,gl);S.uni++;S.fastUni=Math.min(S.fastUni,S.rtU);S.rtU=0;S.rtE=0;S.rt=0;S.rn=0;S.il=-9;S.ipu={};S.rl.inf=[0,0,0];S.amp=0;S.inf=0;S.el=-9;S.eamp=0;if(!EFo.ke){S.epu={};S.rl.eter=[0,0,0]}recalcEF();wipe();toast('ユニティ! ユニティポイント +'+fL(gl))}
+function renderEter(){const ac=S.eamp*.60206;$('p-eter').innerHTML=`<div class='box' style='margin-bottom:10px'>新星ポイントが<b>1e308</b>に届くとエタニティに到達できます。新星ポイントと新星の強化を失う代わりに<b>超新星ポイント</b>を得ます。<br>超新星ポイント <b>${fL(S.el)}</b> ／ 通算 ${S.eter} 回 ／ 次の獲得 <b>${fL(epGL())}</b><br>超新星ポイントが<b>1e2466</b>に届くと、ユニティに到達できます。</div><div class='row gold'><h3>超新星の増幅 Lv${S.eamp}</h3><p>超新星ポイント獲得 ×5 (次のコスト ${fL(ac)})</p><button class='buy' data-q='a' ${S.el<ac-1e-9?'disabled':''}>購入</button></div>`+EPU.map((p,i)=>`<div class='row ${S.epu[i]?'done':''}'><h3>${p[0]}</h3><p>${p[1]}</p><button class='buy' data-q='${i}' ${S.epu[i]||S.el<(p[5]??Math.log10(p[2]))-1e-9?'disabled':''}>${S.epu[i]?'取得済み':(p[5]?fL(p[5]):f(p[2]))}</button></div>`).join('')}
+$('p-eter').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a'){let c=0;while(S.el>=S.eamp*.60206-1e-9&&c++<5000){S.el=lsub(S.el,S.eamp*.60206);S.eamp++}}else{const lc=EPU[q][5]??Math.log10(EPU[q][2]);if(S.el>=lc-1e-9&&!S.epu[q]){S.el=lsub(S.el,lc);S.epu[q]=1}}renderEter()};
+function renderUniOld(){$('p-uni').innerHTML=`<div class='box' style='margin-bottom:10px'>超新星ポイントが<b>1e2466</b>に届くとユニティに到達できます。エタニティ以下のほぼすべてを失う代わりに<b>ユニティポイント</b>を得ます。<br>ユニティポイント <b>${f(S.un)}</b> ／ 通算 ${S.uni} 回 ／ 次の獲得 <b>${f(unGain())}</b></div><div class='row gold'><h3>ユニティの増幅 Lv${S.uamp}</h3><p>ユニティポイント獲得 ×5 (次のコスト ${f(4**S.uamp)})</p><button class='buy' data-q='a' ${S.un<4**S.uamp?'disabled':''}>購入</button></div>`+rowU(UNU,S.unu,S.un)}
+$('p-uni').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a')buyMax('un','uamp');else if(S.un>=UNU[q][2]&&!S.unu[q]){S.un-=UNU[q][2];S.unu[q]=1}renderUni()};
+const dmRate=()=>(Math.log10(1+S.bh))**2/10*3**S.pls.filter(x=>x).length*EFo.dm;
+function updCos(){const e=$('cb');if(!e)return;e.innerHTML=`ブラックホール質量 <b>${f(S.bh)}</b> ／ 暗黒物質 <b>${f(S.dm)}</b> (毎秒 +${f(dmRate())})<br>質量による全体倍率 <b>×${f((1+Math.log10(1+S.bh))**2)}</b><br>銀河の総Lv ${S.gx.reduce((a,b)=>a+b,0)} → 惑星の強さ ×${gsyn().toFixed(2)}`;document.querySelectorAll('#p-cos [data-c]').forEach(b=>b.disabled=S.dm<+b.dataset.c);document.querySelectorAll('#p-cos [data-u]').forEach(b=>b.disabled=S.ul<Math.log10(+b.dataset.u)-1e-9)}
+function renderCos(){const hd=t=>`<h3 style='margin:16px 3px 8px'>${t}</h3>`;
+$('p-cos').innerHTML=`<div class='box' id='cb' style='margin-bottom:10px'></div><div class='row gold'><h3>ブラックホール</h3><p>星屑を吸い込ませて質量を育てます。質量は全体倍率と暗黒物質を生み、暗黒物質で惑星を解放します。質量はリセットしても残ります。</p><div><button class='btn' data-a='abs' data-f='.1'>10%吸収</button><button class='btn' data-a='abs' data-f='1'>全吸収</button><button class='btn' data-a='auto' aria-pressed='${!!S.bhAuto}'>自動吸収(毎秒10%) ${S.bhAuto?'ON':'OFF'}</button></div></div>`+hd('惑星 ― 星座を置くと、その強化効果が得られます')+PN.map((n,p)=>{const c=S.plc[p],on=S.pls[p],ds=CON.map((x,i)=>S.cons[i]?`<option value='${i}' ${c==i?'selected':''}>${x[0]} Lv${S.cons[i]}</option>`:'').join(''),ef=on&&c>=0?`<br>${CON[c][3]}${f(eff(CON[c][1],CON[c][2],PP[p]*gsyn()*(1+.5*(S.cons[c]-1))))}${CON[c][1]=='ab'?'%':''}`:'';return `<div class='row ${on?'':'lock'}'><h3>${n} (強さ ×${PP[p]})</h3><p>${on?`<select data-p='${p}'><option value='-1'>(なし)</option>${ds}</select>${ef}`:'未解放'}</p>${on?'':`<button class='buy' data-a='pl' data-i='${p}' data-c='${PC[p]}'>解放 ${f(PC[p])}</button>`}</div>`}).join('')+hd('星座 ― ユニティポイントで発見・強化(最大Lv10)')+CON.map((c,i)=>{const l=S.cons[i],st=1+.5*(l-1),pl=S.plc.indexOf(i),cost=l?CL(i,l):CD(i);return `<div class='row ${l?'':'lock'}'><h3>${c[0]} ${l?'Lv'+l:''}${pl>=0?' ・'+PN[pl]+'に配置中':''}</h3><p>${l?c[3]+f(eff(c[1],c[2],st))+(c[1]=='ab'?'%':'')+' (惑星の強さで倍加)':'未発見'}</p>${l>=10?'':`<button class='buy' data-a='cn' data-i='${i}' data-u='${cost}'>${l?'強化':'発見'} ユニ${f(cost)}</button>`}</div>`}).join('')+hd('銀河 ― 暗黒物質で育てると永続の恩恵が得られ、惑星の強さも底上げされます(最大Lv25)')+GX.map((g,i)=>{const L=S.gx[i],c=GB[i]*3**L;return `<div class='row ${L?'':'lock'}'><h3>${g[0]} Lv${L}</h3><p>${g[3]}${f(g[2]**L)}${L<25?` (次のレベルで×${g[2]})`:' (最大)'}</p>${L>=25?'':`<button class='buy' data-a='gx' data-i='${i}' data-c='${c}'>${L?'成長':'形成'} ${f(c)}</button>`}</div>`}).join('');updCos()}
+$('p-cos').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
+if(a=='abs'){const x=S.d*+b.dataset.f;S.bh=Math.min(S.bh+x,1.7e308);S.d-=x}
+else if(a=='auto')S.bhAuto=!S.bhAuto;
+else if(a=='pl'&&S.dm>=PC[i]&&!S.pls[i]){S.dm-=PC[i];S.pls[i]=1}
+else if(a=='cn'){const l=S.cons[i],c=l?CL(i,l):CD(i);if(l<10&&S.ul>=Math.log10(c)-1e-9){S.ul=lsub(S.ul,Math.log10(c));S.cons[i]++}}
+else if(a=='gx'){const L=S.gx[i],c=GB[i]*3**L;if(L<25&&S.dm>=c){S.dm-=c;S.gx[i]++}}
+recalcEF();renderCos()};
+$('p-cos').onchange=e=>{const p=e.target.dataset.p;if(p==null)return;const c=+e.target.value;S.plc.forEach((x,q)=>{if(c>=0&&x==c)S.plc[q]=-1});S.plc[p]=c;recalcEF();renderCos()};
+const ipGL=()=>{const l=S.amp*.69897+lg('ip')+(S.epu[0]?6:0)+Math.max(0,Math.min(S.tl,1e5)-308)/(50/(1+EFo.ov));return l<12?Math.log10(Math.max(1,Math.round(10**l))):l};
+const unGL=()=>{const l=S.uamp*.69897+lg('un');return l<12?Math.log10(Math.max(1,Math.round(10**l))):l};
+const buyIP=()=>{let c=0;while(S.il>=S.amp*.60206-1e-9&&c++<5000){S.il=lsub(S.il,S.amp*.60206);S.amp++}};
+const buyUN=()=>{let c=0;while(S.ul>=S.uamp*.60206-1e-9&&c++<5000){S.ul=lsub(S.ul,S.uamp*.60206);S.uamp++}};
+const lcOf=p=>p[5]??Math.log10(p[2]);
+const rowL=(l,st,cur)=>l.map((p,i)=>`<div class='row ${st[i]?'done':''}'><h3>${p[0]}</h3><p>${p[1]}</p><button class='buy' data-q='${i}' ${st[i]||cur<lcOf(p)-1e-9?'disabled':''}>${st[i]?'取得済み':(p[5]?fL(p[5]):f(p[2]))}</button></div>`).join('');
+function renderInf(){const ac=S.amp*.60206;$('p-inf').innerHTML=`<div class='box' style='margin-bottom:10px'>星屑が<b>1e308</b>に届くとインフィニティに到達できます(さらに集めると、50桁ごとに獲得が10倍)。星核・強化・施設を失う代わりに<b>新星ポイント</b>を得ます。新星ポイントに上限はありません。<br>新星ポイント <b>${fL(S.il)}</b> ／ 通算 ${S.infAll} 回 ／ 次の獲得 <b>${fL(ipGL())}</b><br>新星ポイントが1e308に届くと、エタニティに到達できます(さらに貯めると獲得ボーナス)。</div><div class='row gold'><h3>新星の増幅 Lv${S.amp}</h3><p>新星ポイント獲得 ×5 (次のコスト ${fL(ac)})</p><button class='buy' data-q='a' ${S.il<ac-1e-9?'disabled':''}>購入</button></div>`+rowL(IPU,S.ipu,S.il)}
+$('p-inf').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a')buyIP();else if(!S.ipu[q]&&S.il>=lcOf(IPU[q])-1e-9){S.il=lsub(S.il,lcOf(IPU[q]));S.ipu[q]=1}recalcEF();renderInf()};
+function renderUni(){const ac=S.uamp*.60206;$('p-uni').innerHTML=`<div class='box' style='margin-bottom:10px'>超新星ポイントが<b>1e2466</b>に届くとユニティに到達できます。エタニティ以下のほぼすべてを失う代わりに<b>ユニティポイント</b>を得ます。ユニティポイントに上限はありません。<br>ユニティポイント <b>${fL(S.ul)}</b> ／ 通算 ${S.uni} 回 ／ 次の獲得 <b>${fL(unGL())}</b></div><div class='row gold'><h3>ユニティの増幅 Lv${S.uamp}</h3><p>ユニティポイント獲得 ×5 (次のコスト ${fL(ac)})</p><button class='buy' data-q='a' ${S.ul<ac-1e-9?'disabled':''}>購入</button></div>`+rowL(UNU,S.unu,S.ul)}
+$('p-uni').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const q=b.dataset.q;if(q=='a')buyUN();else if(!S.unu[q]&&S.ul>=lcOf(UNU[q])-1e-9){S.ul=lsub(S.ul,lcOf(UNU[q]));S.unu[q]=1}recalcEF();renderUni()};
+S.pls=PN.map((_,i)=>S.pls[i]||0);S.plc=PN.map((_,i)=>S.plc[i]??-1);S.cons=CON.map((_,i)=>S.cons[i]||0);S.gx=GX.map((_,i)=>S.gx[i]||0);
+const gainL=()=>{const l=(S.tl-9)/2+(S.ipu[5]?1:0)+lg('cg');if(l<12){const v=Math.floor(10**l+1e-9);return v>=1?Math.log10(v):-9}return l};
+function renderPre(){const av=lsub(S.cl,S.spl),g=gainL();$('p-pre').innerHTML=`<div class='box' style='margin-bottom:10px'>星を崩壊させると、施設と強化を失う代わりに<b>星核</b>を得ます。星核は全体の産出を大きく増やし、下の永続強化にも使えます(上限なし)。<br>所持 <b>${fL(av)}</b>(累計 ${fL(S.cl)}) ／ 今回の獲得 <b>${fL(g)}</b></div><div class='row gold'><h3>超新星を起こす</h3><p>${g>-9?'星核を'+fL(g)+'個得られます':'星屑約1e9で最初の星核が得られます'}</p><button class='buy' id='nova' ${g<=-9?'disabled':''}>${armed?'本当に?':'起こす'}</button></div>`+PU.map((p,i)=>`<div class='row ${S.pu[i]?'done':''}'><h3>${p[0]}</h3><p>${p[1]}</p><button class='buy' data-p='${i}' ${S.pu[i]||av<lcOf(p)-1e-9?'disabled':''}>${S.pu[i]?'取得済み':(p[5]?'星核 '+fL(p[5]):'星核 '+f(p[2]))}</button></div>`).join('')}
+$('p-pre').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(b.id=='nova'){if(!armed){armed=1;setTimeout(()=>{armed=0;renderPre()},3000);renderPre();return}armed=0;nova();return}const i=+b.dataset.p,c=lcOf(PU[i]);if(!S.pu[i]&&lsub(S.cl,S.spl)>=c-1e-9){S.spl=ladd(S.spl,c);S.pu[i]=1;recalcEF();renderPre()}};
+const RPN={pu:'超新星(星核)',inf:'インフィニティ(新星ポイント)',eter:'エタニティ(超新星ポイント)',uni:'ユニティ(ユニティポイント)'};
+const rpCur=g=>g=='pu'?lsub(S.cl,S.spl):g=='inf'?S.il:g=='eter'?S.el:S.ul;
+const rpCost=(g,i)=>RP[g][i][3]+RP[g][i][4]*S.rl[g][i];
+function rpBuy(g,i,n){let c=0;while(c<n&&rpCur(g)>=rpCost(g,i)-1e-9){const k=rpCost(g,i);if(g=='pu')S.spl=ladd(S.spl,k);else if(g=='inf')S.il=lsub(S.il,k);else if(g=='eter')S.el=lsub(S.el,k);else S.ul=lsub(S.ul,k);S.rl[g][i]++;c++}}
+function renderRP(){let h='';for(const g in RP){h+=`<h3 style='margin:16px 3px 8px'>${RPN[g]} ― 所持 ${fL(rpCur(g))}</h3>`+RP[g].map((r,i)=>{const L=S.rl[g][i],c=rpCost(g,i),ok=rpCur(g)>=c-1e-9;return `<div class='row'><h3>${r[0]} Lv${L}</h3><p>${r[5]}${fL(L*Math.log10(r[2]))} (1Lvごとに ×${f(r[2])}) ／ 次のコスト ${fL(c)}</p><div><button class='buy' data-g='${g}' data-i='${i}' data-n='1' ${ok?'':'disabled'}>+1</button> <button class='buy' data-g='${g}' data-i='${i}' data-n='1000' ${ok?'':'disabled'}>最大</button></div></div>`}).join('')}$('p-rp').innerHTML=`<div class='box' style='margin-bottom:10px'>どの層でも、レベルに上限のない強化です。コストは1レベルごとに上がり続けます。超新星の分はインフィニティで、インフィニティの分はエタニティで、エタニティの分はユニティでリセットされます(保持系の強化で残せます)。</div>`+h}
+$('p-rp').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;rpBuy(b.dataset.g,+b.dataset.i,+b.dataset.n);recalcEF();renderRP()};
+// セーブ
+const save=()=>{S.last=now();try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+$('ex').onclick=()=>{save();$('ta').value=btoa(JSON.stringify(S));$('ta').select()};
+$('im').onclick=()=>{try{S=Object.assign(def(),JSON.parse(atob($('ta').value.trim())));S.n=G.map((_,i)=>S.n[i]||0);upKey='';achN=-1;toast('読み込みました')}catch(e){toast('読み込めません。書き出したデータをそのまま貼り付けてください')}};
+let rsA=0;$('rs').onclick=()=>{if(!rsA){rsA=1;$('rs').textContent='もう一度押すと全消去';setTimeout(()=>{rsA=0;$('rs').textContent='全消去'},3000);return}S=def();upKey='';achN=-1;save();location.reload()};
+addEventListener('beforeunload',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+// ドット絵の星
+{const N=25,c=N/2,cy=c+1.2,R=12,r=5,P=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,q=i%2?r:R;P.push([c+q*Math.cos(a),cy+q*Math.sin(a)])}
+const ins=(x,y)=>{let w=false;for(let i=0,j=9;i<10;j=i++){const[a,b]=P[i],[p,q]=P[j];if((b>y)!=(q>y)&&x<(p-a)*(y-b)/(q-b)+a)w=!w}return w};
+const F=[];for(let y=0;y<N;y++){F[y]=[];for(let x=0;x<N;x++)F[y][x]=ins(x+.5,y+.5)}
+let s='';for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(F[y][x]){const e=!F[y-1]?.[x]||!F[y+1]?.[x]||!F[y][x-1]||!F[y][x+1],d=Math.hypot(x+.5-c,y+.5-cy);s+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${e?'#8a4a0c':d<3?'#fff4b8':x+y<N-1?'#ffcf5c':'#e29a2e'}"/>`}
+$('star').innerHTML=`<svg viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`}
+// クリック
+$('star').onclick=e=>{const v=cval();add(v);S.clicks++;const s=document.createElement('div');s.className='fl';s.textContent='+'+f(v);s.style.left=(e.clientX||innerWidth/2)-12+'px';s.style.top=(e.clientY||200)-20+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),900)};
+// 黄金の星
+let gt=now()+(S.pu[1]?30:60)*1e3+Math.random()*3e4,ge=null;
+function goldTick(){if(ge){if(now()>ge.x){ge.e.remove();ge=null;gt=now()+(S.pu[1]?.5:1)*(60+Math.random()*60)*1e3/EFo.gf}return}
+if(now()<gt)return;const e=document.createElement('button');e.id='g';e.textContent='★';e.setAttribute('aria-label','黄金の星');e.style.left=10+Math.random()*(innerWidth-90)+'px';e.style.top=80+Math.random()*(innerHeight-180)+'px';
+e.onclick=()=>{S.gold++;const r=Math.random(),D=dps();if(r<.5){const x=Math.max(D*600,100)*EFo.gb;add(x);toast('黄金の星! 星屑 +'+f(x))}else if(r<.8){S.buff.x7=now()+3e4;toast('黄金の星! 30秒間、産出 ×7')}else{S.buff.cl=now()+15e3;toast('黄金の星! 15秒間、クリック ×77')}e.remove();ge=null;gt=now()+(S.pu[1]?.5:1)*(60+Math.random()*60)*1e3/EFo.gf};
+document.body.appendChild(e);ge={e,x:now()+13e3}}
+// 毎フレームの更新
+let lt=now(),ab=0;
+function tick(){const t=now(),dt=Math.min((t-lt)/1e3,60);lt=t;recalcEF();tick.dl=dpsL();S.tl=ladd(S.tl,tick.dl+Math.log10(Math.max(dt,1e-6)));add(dps()*dt);goldTick();
+if(S.pu[2]&&!S.off.fac&&(ab+=dt)>=1){ab=0;G.forEach((_,i)=>{if(S.d>=cost(i,1))buy(i)})}
+if(S.ipu[1]&&!S.off.nova&&(tick.an=(tick.an||0)+dt)>=1){tick.an=0;if(gainL()>=Math.max(0,S.cl))nova(1)}
+if(S.epu[2]&&!S.off.amp&&(tick.ae=(tick.ae||0)+dt)>=1){tick.ae=0;buyIP()}
+if(EFo.ak&&!S.off.ak){add(cval()*EFo.ak*dt);S.clicks+=EFo.ak*dt}
+if(EFo.au&&!S.off.up&&(tick.au=(tick.au||0)+dt)>=1){tick.au=0;for(const u of UP)if(!S.up[u.id]&&u.v()&&S.d>=u.c){S.d-=u.c;S.up[u.id]=1;upKey=''}}
+if(EFo.ai&&!S.off.ipu&&(tick.ai=(tick.ai||0)+dt)>=1){tick.ai=0;IPU.forEach((u,i)=>{const lc=u[5]??Math.log10(u[2]);if(!S.ipu[i]&&S.il>=lc-1e-9){S.il=lsub(S.il,lc);S.ipu[i]=1}})}
+if(EFo.ae&&!S.off.eter&&S.il>=308)eternity();
+if(S.tl>=S.itg&&S.ipu[3]&&!S.off.inf)infinity();
+S.ilMax=Math.max(S.ilMax,S.il);
+{const L=AU.filter(a=>a[2]()),k=L.map(a=>a[0]+!S.off[a[0]]).join()+S.itg;if(tick.ka!=k){tick.ka=k;$('au').hidden=!L.length;$('au').innerHTML='自動化 (押すとON/OFF切替)<div>'+L.map(a=>`<button class='btn' data-a='${a[0]}' aria-pressed='${!S.off[a[0]]}'>${a[1]} ${S.off[a[0]]?'OFF':'ON'}</button>`).join('')+(S.ipu[3]?`<button class='btn' data-a='itg'>自動インフィニティ目標 e${S.itg}</button>`:'')+'</div>'}}
+{const pm=$('pm'),m=S.el>=2466?'u':S.il>=308?'e':S.tl>=308?'i':'';pm.hidden=!m;pm.dataset.m=m;if(m)pm.textContent=m=='u'?'ユニティに到達する(ユニティポイント +'+fL(unGL())+')':m=='e'?'エタニティに到達する(超新星ポイント +'+fL(epGL())+')':'インフィニティに到達する(新星ポイント +'+fL(ipGL())+')'}
+S.dm+=dmRate()*dt;if(S.bhAuto&&(tick.bh=(tick.bh||0)+dt)>=1){tick.bh=0;const x=S.d*.1;S.bh=Math.min(S.bh+x,1.7e308);S.d-=x}
+T={dps:dps(),gm:gM(),cv:cval()};S.pt+=dt;S.rt+=dt;S.rtE+=dt;S.rtU+=dt;S.elMax=Math.max(S.elMax,S.el);S.ulMax=Math.max(S.ulMax,S.ul);
+A.forEach((a,i)=>{if(!S.ach[i]&&a[2]()){S.ach[i]=1;toast('実績解放: '+a[0])}});
+$('d').textContent=f(S.d);$('ps').textContent='毎秒 '+(tick.dl>300?fL(tick.dl):f(dps()))+'  ／ クリック '+f(cval());document.title=f(S.d)+' - Stella idle Clicker';
+const buffs=[S.buff.x7>t?'産出×7 残り'+Math.ceil((S.buff.x7-t)/1e3)+'秒':'',S.buff.cl>t?'クリック×77 残り'+Math.ceil((S.buff.cl-t)/1e3)+'秒':''].filter(Boolean).join(' / ');
+$('st').innerHTML=`全体倍率 <b>×${f(gM())}</b> ／ 星核 <b>${fL(S.cl)}</b>${S.infAll?` ／ 新星ポイント <b>${fL(S.il)}</b>`:''}${S.eter?` ／ 超新星ポイント <b>${fL(S.el)}</b>`:''}${S.uni?` ／ ユニティポイント <b>${fL(S.ul)}</b>`:''}<br>今回の累計 <b>${fL(S.tl)}</b> ／ 通算 <b>${f(S.all)}</b><br>クリック <b>${Math.floor(S.clicks)}</b> 回 ／ 黄金の星 <b>${S.gold}</b> 個 ／ 超新星 <b>${S.runs}</b> 回`+(buffs?`<br><b style="color:var(--au)">${buffs}</b>`:'')+(offMsg?`<br>${offMsg}`:'');
+if(tab=='gen')G.forEach((g,i)=>{const k=kOf(i),c=cost(i,k),ms=MS.find(x=>x>S.n[i]);$('o'+i).textContent='× '+S.n[i];
+$('e'+i).textContent=`1基 ${f(g[2]*genM(i)*gM())}/秒 ・ 計 ${f(g[2]*genM(i)*gM()*S.n[i])}/秒`+(ms?` ・ ${ms}基で ×2`:'');
+const b=$('r'+i).querySelector('.buy');b.textContent=`+${k} / ${f(c)}`;b.disabled=S.d<c;$('r'+i).classList.toggle('lock',S.d<G[i][1]*.5&&!S.n[i]);$('r'+i).hidden=!(i<2||S.n[i-1]||S.n[i]||S.all>=G[i][1]*.3)});
+if(tab=='up'){renderUp();$('p-up').querySelectorAll('.buy').forEach(b=>b.disabled=S.d<UP.find(u=>u.id==b.dataset.u).c)}
+if(tab=='pre'&&!armed){const k=fL(gainL())+'|'+fL(lsub(S.cl,S.spl));if(tick.k!=k){tick.k=k;renderPre()}}
+if(tab=='ach')renderAch();if(tab=='inf'){const k=[fL(S.il),S.amp,JSON.stringify(S.ipu),fL(ipGL())].join();if(tick.ki!=k){tick.ki=k;renderInf()}}if(tab=='rp'){const k=JSON.stringify(S.rl)+fL(lsub(S.cl,S.spl))+fL(S.il)+fL(S.el)+fL(S.ul);if(tick.kr!=k){tick.kr=k;renderRP()}}if(tab=='cos'){const k=JSON.stringify([S.pls,S.plc,S.cons,S.bhAuto,S.gx]);if(tick.kc!=k){tick.kc=k;renderCos()}updCos()}if(tab=='uni'){const k=[fL(S.ul),S.uamp,JSON.stringify(S.unu),fL(unGL())].join();if(tick.ku!=k){tick.ku=k;renderUni()}}if(tab=='eter'){const k=[fL(S.el),S.eamp,JSON.stringify(S.epu),fL(epGL())].join();if(tick.ke!=k){tick.ke=k;renderEter()}}}
+// オフライン分の加算
+{const off=Math.min((now()-S.last)/1e3,86400);if(off>60){const x=dps()*off*(S.pu[5]||EFo.of?1:.5);add(x);offMsg='おかえりなさい。放置中に星屑 '+f(x)+' を稼ぎました'}}
+renderPre();renderUp();renderAch();renderInf();renderEter();renderCos();
+setInterval(tick,100);setInterval(save,10000);tick();
+</script></body></html>
